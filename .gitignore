@@ -1,0 +1,5 @@
+/inventory/*
+!/inventory/.gitkeep
+keys/*
+.DS_Store
+.python-version

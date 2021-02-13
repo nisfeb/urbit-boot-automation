@@ -1,0 +1,17 @@
+---
+- name: "Set up an Urbit ship"
+  hosts: "{{ target if target is defined else 'ship_servers' }}"
+  become: true
+
+  tasks:
+    - name: Test if the ship is already running. Used to prevent double runs.
+      command: ps -aux | grep {{ ship_name }} | wc | awk '$1 < 2 {err = 1} END {exit err}'
+      register: ship_running
+    - name: Test if the ship has run by checking for its data directory. Used to prevent accidental restart of stopped ship.
+      stat:
+        path: {{ ship_name }}
+      register: ship_has_run
+    - name: Start the ship if it has never run and is not currently running
+      command: ./urbit -d -w {{ ship_name }} -G {{ ship_key }} > {{ ship_name }}.out
+      tags: urbit
+      when: not (ship_has_run.stat.exists) and ship_status != 1
