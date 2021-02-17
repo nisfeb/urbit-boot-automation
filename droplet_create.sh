@@ -8,6 +8,7 @@ show_help() {
     echo
     echo "   -n, --name      Ship name (without sig ~)"
     echo "   -t, --token     DigitalOcean token"
+    echo "   -k, --key       Urbit network key"
     echo
     exit 1
 }
@@ -23,8 +24,13 @@ case $key in
     shift # past argument
     shift # past value
     ;;
-    -t|--t)
+    -t|--token)
     DO_TOKEN="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -k|--key)
+    URBIT_KEY="$2"
     shift # past argument
     shift # past value
     ;;
@@ -79,7 +85,20 @@ EOF
         }
 EOF
     )
+    # Print droplet data for the created droplet
     echo $droplet_data | jq .
+    # Store the droplet ID for IP query
+    new_droplet_id=$(echo $droplet_data | jq .droplet.id)
+    # Wait for the droplet to finish initialization
+    echo "Waiting for droplet to complete initialization..."
+    sleep 10s
+    # Get the details for the newly created droplet
+    new_droplet_details=$(curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer ${DO_TOKEN}" "https://api.digitalocean.com/v2/droplets/${new_droplet_id}") 
+    # Parse the IP of the droplet from the details
+    new_droplet_ips=$(echo $new_droplet_details | jq .droplet.networks.v4[].ip_address)
+    new_droplet_ip=$(echo $new_droplet_ips | awk -F '"' '{print $4}')
+    echo "${SHIP_NAME} ship_name=${SHIP_NAME} ship-key=${URBIT_KEY} ansible_host=${new_droplet_ip} ansible_port=22 ansible_ssh_user=root ansible_ssh_private_key_file=./keys/${SHIP_NAME}" >> ./inventory/hosts
+    echo "Complete"
 }
 
 create_droplet
