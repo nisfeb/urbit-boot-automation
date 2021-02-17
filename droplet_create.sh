@@ -99,8 +99,7 @@ EOF
     # Extract the external IP from the set that includes the internal IP
     new_droplet_ip=$(echo $new_droplet_ips | awk -F '"' '{print $4}')
     # Write a new line to the Ansible hosts file with the provided data
-    echo "${SHIP_NAME} ship_name=${SHIP_NAME} ship-key=${URBIT_KEY} ansible_host=${new_droplet_ip} ansible_port=22 ansible_ssh_user=root ansible_ssh_private_key_file=./keys/${SHIP_NAME}" >> ./inventory/hosts
-    echo "Complete"
+    echo "${SHIP_NAME} ship_name=${SHIP_NAME} ship_key=${URBIT_KEY} ansible_host=${new_droplet_ip} ansible_port=22 ansible_ssh_user=root ansible_ssh_private_key_file=./keys/${SHIP_NAME}" >> ./inventory/hosts
 }
 
 create_droplet

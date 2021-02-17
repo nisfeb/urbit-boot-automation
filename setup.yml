@@ -5,13 +5,20 @@
 
   tasks:
     - name: Test if the ship is already running. Used to prevent double runs.
-      command: ps -aux | grep {{ ship_name }} | wc | awk '$1 < 2 {err = 1} END {exit err}'
+      shell: ps -aux | grep {{ ship_name }} | wc | awk '$1 < 2 {err = 1} END {exit err}'
       register: ship_running
     - name: Test if the ship has run by checking for its data directory. Used to prevent accidental restart of stopped ship.
       stat:
-        path: {{ ship_name }}
+        path: "{{ ship_name }}"
       register: ship_has_run
+    - name: Download and unarchive latest Urbit binary
+      unarchive:
+        src: https://urbit.org/install/linux64/latest
+        dest: /usr/local/bin
+        remote_src: yes
+        list_files: yes
+      register: urbit_dir
     - name: Start the ship if it has never run and is not currently running
-      command: ./urbit -d -w {{ ship_name }} -G {{ ship_key }} > {{ ship_name }}.out
+      shell: /usr/local/bin/{{ urbit_dir.files[0] }} -d -w {{ ship_name }} -G {{ ship_key }} > {{ ship_name }}.out
       tags: urbit
-      when: not (ship_has_run.stat.exists) and ship_status != 1
+      when: not (ship_has_run.stat.exists) and ship_running != 1

@@ -13,4 +13,4 @@ Note: This project is intended to simplify initial boot of an Urbit ship. After 
 ## How it Works
 
 1. `droplet_create.sh` takes the ship name and DigitalOcean token and creates a properly sized and named Droplet with a properly configured `authorized_keys` entry for Ansible to use. It then adds the ship to inventory with the correct variables.
-2. `ansible-playbook -i inventory setup.yml --tags=start` takes the ship configurations in inventory and sets their status.
+2. `ansible-playbook -i inventory/hosts setup.yml` takes the ship configurations in inventory and sets their status.
