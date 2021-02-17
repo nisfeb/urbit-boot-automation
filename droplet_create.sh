@@ -6,7 +6,7 @@
 show_help() {
     echo "Usage: $0 [option...]" >&2
     echo
-    echo "   -n, --name      Ship name (without sig ~)"
+    echo "   -n, --name      Planet name (without sig ~)"
     echo "   -t, --token     DigitalOcean token"
     echo "   -k, --key       Urbit network key"
     echo
@@ -20,7 +20,7 @@ key="$1"
 
 case $key in
     -n|--name)
-    SHIP_NAME="$2"
+    PLANET_NAME="$2"
     shift # past argument
     shift # past value
     ;;
@@ -42,7 +42,7 @@ esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-echo "SHIP NAME  = ${SHIP_NAME}"
+echo "PLANET NAME  = ${PLANET_NAME}"
 echo "DO TOKEN     = ${DO_TOKEN}"
 if [[ -n $1 ]]; then
     echo "Last line of file specified as non-opt/last argument:"
@@ -51,15 +51,15 @@ fi
 
 create_droplet() {
     # Generate SSH Key
-    ssh-keygen -t rsa -b 2048 -f ./keys/$SHIP_NAME -C $SHIP_NAME -q -N ""
+    ssh-keygen -t rsa -b 2048 -f ./keys/$PLANET_NAME -C $PLANET_NAME -q -N ""
     # Add SSH key to your DO account and capture the reponse JSON
     key_response=$(curl -X POST https://api.digitalocean.com/v2/account/keys \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer $DO_TOKEN" \
         --data-binary @- <<EOF
         {
-            "name": "${SHIP_NAME} key",
-            "public_key": "$(cat ./keys/$SHIP_NAME.pub)"
+            "name": "${PLANET_NAME} key",
+            "public_key": "$(cat ./keys/$PLANET_NAME.pub)"
         }
 EOF
     )
@@ -71,7 +71,7 @@ EOF
         -H "Authorization: Bearer ${DO_TOKEN}" \
         --data-binary @- <<EOF 
         {
-            "name": "${SHIP_NAME}",
+            "name": "${PLANET_NAME}",
             "region": "nyc3",
             "size": "s-2vcpu-4gb",
             "image": "ubuntu-20-04-x64",
@@ -99,7 +99,7 @@ EOF
     # Extract the external IP from the set that includes the internal IP
     new_droplet_ip=$(echo $new_droplet_ips | awk -F '"' '{print $4}')
     # Write a new line to the Ansible hosts file with the provided data
-    echo "${SHIP_NAME} ship_name=${SHIP_NAME} ship_key=${URBIT_KEY} ansible_host=${new_droplet_ip} ansible_port=22 ansible_ssh_user=root ansible_ssh_private_key_file=./keys/${SHIP_NAME}" >> ./inventory/hosts
+    echo "${PLANET_NAME} planet_name=${PLANET_NAME} planet_key=${URBIT_KEY} ansible_host=${new_droplet_ip} ansible_port=22 ansible_ssh_user=root ansible_ssh_private_key_file=./keys/${PLANET_NAME}" >> ./inventory/hosts
 }
 
 create_droplet

@@ -1,16 +1,16 @@
 ---
-- name: "Set up an Urbit ship"
-  hosts: "{{ target if target is defined else 'ship_servers' }}"
+- name: "Set up an Urbit planet"
+  hosts: "{{ target if target is defined else 'planet_servers' }}"
   become: true
 
   tasks:
-    - name: Test if the ship is already running. Used to prevent double runs.
-      shell: ps -aux | grep {{ ship_name }} | wc | awk '$1 < 2 {err = 1} END {exit err}'
-      register: ship_running
-    - name: Test if the ship has run by checking for its data directory. Used to prevent accidental restart of stopped ship.
+    - name: Test if the planet is already running. Used to prevent double runs.
+      shell: ps -aux | grep {{ planet_name }} | wc | awk '$1 < 2 {err = 1} END {exit err}'
+      register: planet_running
+    - name: Test if the planet has run by checking for its data directory. Used to prevent accidental restart of stopped planet.
       stat:
-        path: "{{ ship_name }}"
-      register: ship_has_run
+        path: "{{ planet_name }}"
+      register: planet_has_run
     - name: Download and unarchive latest Urbit binary
       unarchive:
         src: https://urbit.org/install/linux64/latest
@@ -18,7 +18,7 @@
         remote_src: yes
         list_files: yes
       register: urbit_dir
-    - name: Start the ship if it has never run and is not currently running
-      shell: /usr/local/bin/{{ urbit_dir.files[0] }} -d -w {{ ship_name }} -G {{ ship_key }} > {{ ship_name }}.out
+    - name: Start the planet if it has never run and is not currently running
+      shell: /usr/local/bin/{{ urbit_dir.files[0] }} -d -w {{ planet_name }} -G {{ planet_key }} > {{ planet_name }}.out
       tags: urbit
-      when: not (ship_has_run.stat.exists) and ship_running != 1
+      when: not (planet_has_run.stat.exists) and planet_running != 1
