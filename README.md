@@ -17,6 +17,10 @@ This project is intended to simplify initial boot of an Urbit planet. After init
 - [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-ansible-on-rhel-centos-or-fedora)
 - [jq](https://stedolan.github.io/jq/download/)
 
+## Configuration
+
+The droplet that is created uses a hard coded configuration that can be found and modified [here](https://github.com/nisfeb/urbit-boot-automation/blob/master/droplet_create.sh#L78). There is [an issue](https://github.com/nisfeb/urbit-boot-automation/issues/4) created to make this configurable with defaults. In the mean time, modification of this file before running the script will allow you to specify your exact preferences. Note that the syntax for droplet sizing is specific. You can find the DigitalOcean table specifying limits and size types [here](https://www.digitalocean.com/docs/droplets/).
+
 ## How it Works
 
 1. `./droplet_create.sh -n PLANET_NAME -t DIGITAL_OCEAN_TOKEN -k URBIT_NETWORK_KEY` takes the planet name, network key, and DigitalOcean token and creates a properly sized and named Droplet with a properly configured `authorized_keys` entry for Ansible to use. It then adds the planet to inventory with the correct variables. If you want to SSH into the host, you can use the keys that are generated and placed in the `keys` directory. _This script currently starts a default droplet and does not harden the server with additional security settings._
