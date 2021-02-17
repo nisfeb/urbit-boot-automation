@@ -94,9 +94,11 @@ EOF
     sleep 10s
     # Get the details for the newly created droplet
     new_droplet_details=$(curl -X GET -H "Content-Type: application/json" -H "Authorization: Bearer ${DO_TOKEN}" "https://api.digitalocean.com/v2/droplets/${new_droplet_id}") 
-    # Parse the IP of the droplet from the details
+    # Parse the IPs of the droplet from the details. This yields internal and external IPs
     new_droplet_ips=$(echo $new_droplet_details | jq .droplet.networks.v4[].ip_address)
+    # Extract the external IP from the set that includes the internal IP
     new_droplet_ip=$(echo $new_droplet_ips | awk -F '"' '{print $4}')
+    # Write a new line to the Ansible hosts file with the provided data
     echo "${SHIP_NAME} ship_name=${SHIP_NAME} ship-key=${URBIT_KEY} ansible_host=${new_droplet_ip} ansible_port=22 ansible_ssh_user=root ansible_ssh_private_key_file=./keys/${SHIP_NAME}" >> ./inventory/hosts
     echo "Complete"
 }
