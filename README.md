@@ -4,18 +4,18 @@ Trivially start a DigitalOcean droplet and start an Urbit planet.
 
 WARNING: This script could result in the need for a breach if misused or if you hit an unknown bug. Use carefully.
 
-Note: This project is intended to simplify initial boot of an Urbit planet. After initial boot the user will need to manage the planet manually as normal. The playbook avoids restarting a running planet, so running multiple times will not cause an issue.
+This project is intended to simplify initial boot of an Urbit planet. After initial boot the user will need to manage the planet manually as normal. The playbook avoids restarting a running planet, so running multiple times should not cause an issue.
 
 ## Prerequisite
 
-- [Urbit planet name](https://urbit.live/)
+- Urbit [planet name](https://urbit.live/)
 - Urbit [network key](https://bridge.urbit.org/) for the planet
 - [DigitalOcean token](https://www.digitalocean.com/docs/apis-clis/api/create-personal-access-token/)
 
 ## How it Works
 
-1. `./droplet_create.sh -n PLANET_NAME -t DIGITAL_OCEAN_TOKEN -k URBIT_NETWORK_KEY` takes the planet name, network key, and DigitalOcean token and creates a properly sized and named Droplet with a properly configured `authorized_keys` entry for Ansible to use. It then adds the planet to inventory with the correct variables.
-2. `ansible-playbook -i inventory/hosts setup.yml` takes the planet configurations in inventory and sets their status.
+1. `./droplet_create.sh -n PLANET_NAME -t DIGITAL_OCEAN_TOKEN -k URBIT_NETWORK_KEY` takes the planet name, network key, and DigitalOcean token and creates a properly sized and named Droplet with a properly configured `authorized_keys` entry for Ansible to use. It then adds the planet to inventory with the correct variables. If you want to SSH into the host, you can use the keys that are generated and placed in the `keys` directory. _This script currently starts a default droplet and does not harden the server with additional security settings._
+2. `ansible-playbook -i inventory/hosts setup.yml` takes the planet configurations in inventory and sets their status. If you get an error like `Failed to connect to the host via ssh` wait a moment and run the playbook again. The Droplet may just not be fully initiailized.
 
 ## Contributing
 

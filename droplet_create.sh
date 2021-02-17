@@ -42,8 +42,9 @@ esac
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
-echo "PLANET NAME  = ${PLANET_NAME}"
-echo "DO TOKEN     = ${DO_TOKEN}"
+echo "PLANET NAME   = ${PLANET_NAME}"
+echo "DO TOKEN      = ${DO_TOKEN}"
+echo "URBIT KEY     = ${URBIT_KEY}"
 if [[ -n $1 ]]; then
     echo "Last line of file specified as non-opt/last argument:"
     tail -1 "$1"
@@ -51,6 +52,7 @@ fi
 
 create_droplet() {
     # Generate SSH Key
+    mkdir -p ./keys
     ssh-keygen -t rsa -b 2048 -f ./keys/$PLANET_NAME -C $PLANET_NAME -q -N ""
     # Add SSH key to your DO account and capture the reponse JSON
     key_response=$(curl -X POST https://api.digitalocean.com/v2/account/keys \
