@@ -15,7 +15,7 @@ This project is intended to simplify initial boot of an Urbit planet. After init
 ## How it Works
 
 1. `./droplet_create.sh -n PLANET_NAME -t DIGITAL_OCEAN_TOKEN -k URBIT_NETWORK_KEY` takes the planet name, network key, and DigitalOcean token and creates a properly sized and named Droplet with a properly configured `authorized_keys` entry for Ansible to use. It then adds the planet to inventory with the correct variables. If you want to SSH into the host, you can use the keys that are generated and placed in the `keys` directory. _This script currently starts a default droplet and does not harden the server with additional security settings._
-2. `ansible-playbook -i inventory/hosts setup.yml` takes the planet configurations in inventory and sets their status. If you get an error like `Failed to connect to the host via ssh` wait a moment and run the playbook again. The Droplet may just not be fully initiailized.
+2. `ansible-playbook -i inventory/hosts setup.yml` uses the settings in `inventory/hosts` to boot each planet if it has not yet been booted. If you get an error like `Failed to connect to the host via ssh` wait a moment and run the playbook again. The Droplet may just not be fully initiailized.
 
 ## Contributing
 
