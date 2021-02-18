@@ -9,4 +9,3 @@
 # consider adding an additional `ansible_connection=local` argument below.
 
 [planet_servers]
-patber-talsef planet_name=patber-talsef planet_key=123123 ansible_host=143.198.8.79 ansible_port=22 ansible_ssh_user=root ansible_ssh_private_key_file=./keys/patber-talsef
