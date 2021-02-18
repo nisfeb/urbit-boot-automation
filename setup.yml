@@ -18,6 +18,46 @@
 
     - name: Turn swap on
       command: swapon -a
+
+# Configure UFW
+    # Deny everything and enable UFW
+    - ufw:
+        state: enabled
+        policy: allow
+    # Allow ssh
+    - ufw:
+        rule: allow
+        port: ssh
+        proto: tcp
+    # Limit ssh (block IPs that try more 6 times in 30 seconds)
+    - ufw:
+        rule: limit
+        port: ssh
+        proto: tcp
+    # Allow 80
+    - ufw:
+        rule: allow
+        port: 80
+        proto: tcp
+    # Allow 443
+    - ufw:
+        rule: allow
+        port: 443
+        proto: tcp
+    # Allow 8506 for ames (ames port set on urbit boot)
+    - ufw:
+        rule: allow
+        port: 8506
+        proto: udp
+
+# Disable password SSH
+    - name: Disallow password authentication
+      lineinfile: dest=/etc/ssh/sshd_config
+                  regexp="^PasswordAuthentication"
+                  line="PasswordAuthentication no"
+                  state=present
+      notify: Restart ssh
+
 # Install and start Urbit
     - name: Set swapiness
       shell: echo 0 | sudo tee /proc/sys/vm/swappiness
@@ -40,6 +80,6 @@
       register: urbit_dir
 
     - name: Start the planet if it has never run and is not currently running
-      shell: /usr/local/bin/{{ urbit_dir.files[0] }} -d -w {{ planet_name }} -G {{ planet_key }} > {{ planet_name }}.out
+      shell: /usr/local/bin/{{ urbit_dir.files[0] }} -p 8506 -d -w {{ planet_name }} -G {{ planet_key }} > {{ planet_name }}.out
       tags: urbit
       when: not (planet_has_run.stat.exists) and planet_running != 1
