@@ -6,6 +6,8 @@ WARNING: This script could result in the need for a breach if misused or if you 
 
 This project is intended to simplify initial boot of an Urbit planet. After initial boot the user will need to manage the planet manually as normal. The playbook avoids restarting a running planet, so running multiple times should not cause an issue.
 
+[![awesome urbit badge](https://img.shields.io/badge/~-awesome%20urbit-lightgrey)](https://github.com/urbit/awesome-urbit)
+
 ## Prerequisite
 
 - Urbit [planet name](https://urbit.live/)
